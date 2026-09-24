@@ -55,6 +55,21 @@ Because this application relies entirely on client-side technologies, getting it
 2. Open the directory and double-click `index.html` to open it in any modern browser.
 3. *Alternatively*, use a simple local server (like VS Code Live Server) for the best experience.
 
+## 🔌 Production Architecture (Connecting to Live Jira)
+
+While this repository is configured in **Demo Mode** for public portfolio viewing, the full production architecture connects directly to live Atlassian Jira instances.
+
+To bypass browser CORS restrictions securely without exposing API tokens in the frontend, the live application utilizes a **Google Apps Script (GAS) Proxy Architecture**:
+1. The frontend (`app.js`) sends a `POST` request containing the Epic Key to a deployed Google Apps Script Web App URL.
+2. The GAS proxy retrieves securely stored Atlassian API tokens from its environment properties.
+3. The proxy constructs the JQL (Jira Query Language) and securely queries the Atlassian REST API (`/rest/api/2/search`).
+4. The proxy returns the hierarchical JSON payload to the frontend for parsing, graph rendering, and AI analysis.
+
+To activate live fetching in your own fork:
+1. Deploy the accompanying `Code.gs` script (not included in this public repo for security) to Google Apps Script.
+2. Define the `GOOGLE_SCRIPT_URL` at the top of `app.js`.
+3. Re-enable the `fetchEpicData()` proxy calls in the frontend router.
+
 ## 🌐 Live Demo
 
 Check out the live interactive demo here: **[Insert Your Vercel/Netlify Link Here]**
