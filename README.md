@@ -22,7 +22,6 @@ This repository contains the **Demo Version** of the application, featuring an i
 
 - **Interactive Dependency Graph:** Visualize parent-child relationships and blocked issues in a clean, drag-and-drop canvas.
 - **AI Delivery Insights:** Automated risk analysis that reads ticket descriptions and comments to identify scope creep, missing criteria, and technical blockers.
-- **Release Note Generator:** A specialized module that trims raw Jira JSON payloads and formulates user-facing release notes explaining *what* changed and *why* it matters.
 - **Zero-Friction UI:** Keyboard navigable ticket list, seamless light/dark mode, and responsive sidebar management.
 
 ## 🛠️ Built With
@@ -36,9 +35,7 @@ This repository contains the **Demo Version** of the application, featuring an i
 
 ```text
 ├── index.html        # Main dashboard and dependency graph viewer
-├── tools.html        # AI Release Notes Generator & JSON Trimmer tool
 ├── app.js            # Core logic, state management, and graph rendering
-├── tools.js          # Logic for the Release Note formulation UI
 ├── data.js           # Mock dataset and JSON parser for Demo Mode
 ├── Code.gs           # Secure Google Apps Script backend proxy template
 ├── styles.css        # Global styles, theming, and layout definitions
@@ -73,7 +70,7 @@ To activate live fetching in your own fork:
 
 ## 🌐 Live Demo
 
-Check out the live interactive demo here: **https://synapse-alpha-beige.vercel.app/**
+Check out the live interactive demo here: **[Insert Your Vercel/Netlify Link Here]**
 
 ---
 
