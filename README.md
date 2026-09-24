@@ -40,6 +40,7 @@ This repository contains the **Demo Version** of the application, featuring an i
 ├── app.js            # Core logic, state management, and graph rendering
 ├── tools.js          # Logic for the Release Note formulation UI
 ├── data.js           # Mock dataset and JSON parser for Demo Mode
+├── Code.gs           # Secure Google Apps Script backend proxy template
 ├── styles.css        # Global styles, theming, and layout definitions
 └── *.svg             # Application branding and vector assets
 ```
@@ -66,8 +67,8 @@ To bypass browser CORS restrictions securely without exposing API tokens in the 
 4. The proxy returns the hierarchical JSON payload to the frontend for parsing, graph rendering, and AI analysis.
 
 To activate live fetching in your own fork:
-1. Deploy the accompanying `Code.gs` script (not included in this public repo for security) to Google Apps Script.
-2. Define the `GOOGLE_SCRIPT_URL` at the top of `app.js`.
+1. Open the included `Code.gs` file and follow the deployment instructions at the top to host it on Google Apps Script.
+2. Define your new `GOOGLE_SCRIPT_URL` at the top of `app.js`.
 3. Re-enable the `fetchEpicData()` proxy calls in the frontend router.
 
 ## 🌐 Live Demo
