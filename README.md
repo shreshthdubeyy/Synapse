@@ -70,7 +70,7 @@ To activate live fetching in your own fork:
 
 ## 🌐 Live Demo
 
-Check out the live interactive demo here: **[Insert Your Vercel/Netlify Link Here]**
+Check out the live interactive demo here: **https://shreshthdubeyy.github.io/Synapse/**
 
 ---
 
