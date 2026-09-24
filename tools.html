@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synapse - Delivery Tools (Release Notes & JSON Trimmer)</title>
+  <link rel="icon" type="image/svg+xml" href="synapse-color.svg">
+  
+  <!-- Fonts: Geist, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+  
+  <!-- Material Symbols Outlined Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-surface text-on-surface h-screen w-full flex overflow-hidden font-body text-body antialiased">
+  
+  <!-- iOS 16 Fluid Background Blobs -->
+  <div class="bg-blobs-container">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+  </div>
+ 
+  <!-- App Wrapper Grid -->
+  <div id="app-wrapper" style="grid-template-rows: 48px 1fr; grid-template-columns: 1fr;">
+    
+    <!-- TOP APP BAR -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="header-logo" style="background: transparent; border: none; padding: 0; display: flex; align-items: center; justify-content: center;">
+          <img src="synapse-color.svg" class="logo-light" alt="Synapse Logo" style="height: 26px; width: 26px; object-fit: contain;">
+          <img src="synapse-white.svg" class="logo-dark" alt="Synapse Logo" style="height: 26px; width: 26px; object-fit: contain;">
+        </div>
+        <div class="header-title-group">
+          <h1>Synapse</h1>
+          <p>Delivery Tools Suite</p>
+        </div>
+        <nav class="header-nav">
+          <a class="header-nav-link active" id="nav-release-link">
+            <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px; vertical-align: -2px;">auto_awesome</span>Release Notes
+          </a>
+          <a class="header-nav-link" id="nav-trimmer-link">
+            <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 4px; vertical-align: -2px;">content_cut</span>JSON Trimmer
+          </a>
+        </nav>
+      </div>
+      
+      <div class="header-actions">
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Theme">
+          <span class="material-symbols-outlined" id="theme-toggle-icon" style="font-size: 16px;">light_mode</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- HORIZONTAL CORE SECTION -->
+    <div class="main-shell-container" style="padding: 0; height: 100%;">
+      
+      <!-- VIEW 1: RELEASE NOTES GENERATOR -->
+      <div id="release-notes-view" class="view-panel active" style="display: flex; height: 100%;">
+        <div id="release-notes-panel" style="display: flex; flex-direction: row; flex-grow: 1; height: 100%; overflow: hidden;">
+          
+          <!-- LEFT PANEL: INPUT WORKSPACE -->
+          <div class="panel" style="width: 360px; flex-shrink: 0; display: flex; flex-direction: column; border-right: 1px solid var(--outline-variant); background-color: var(--surface-color);">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">edit_note</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Ticket Input</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">Fetch key or paste JSON payload</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="panel-content" style="padding: 16px; overflow-y: auto; flex-grow: 1;">
+              <!-- Input Selector Tabs -->
+              <div class="tabs-container">
+                <button class="tab-btn active" id="btn-input-tab-fetch">Fetch Key</button>
+                <button class="tab-btn" id="btn-input-tab-paste">Paste JSON</button>
+              </div>
+
+              <!-- Fetch Tab Content -->
+              <div id="release-tab-fetch-content" class="release-tab-content active">
+                <div class="form-group">
+                  <label for="release-issue-key" class="input-label">Jira Issue Key</label>
+                  <input type="text" id="release-issue-key" class="input-field" placeholder="e.g. FMS-101" style="text-transform: uppercase;">
+                </div>
+                
+                <button id="btn-release-fetch-generate" class="btn btn-primary w-full">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">bolt</span> Fetch &amp; Generate
+                </button>
+              </div>
+
+              <!-- Paste Tab Content -->
+              <div id="release-tab-paste-content" class="release-tab-content" style="display: none;">
+                <div class="form-group">
+                  <label for="release-raw-json" class="input-label">Jira Ticket JSON</label>
+                  <textarea id="release-raw-json" class="textarea-field" rows="12" placeholder='Paste Jira issue JSON payload here... e.g.
+{
+  "key": "PROJ-123",
+  "fields": {
+    "summary": "Fix login button layout alignment",
+    "description": "The login button is shifted left on mobile devices."
+  }
+}'></textarea>
+                </div>
+                
+                <div class="flex-row gap-sm" style="margin-top: 12px;">
+                  <button id="btn-release-trim-json" class="btn btn-secondary flex-1">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">cleaning_services</span> Trim JSON
+                  </button>
+                  <button id="btn-release-paste-generate" class="btn btn-primary flex-1">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">bolt</span> Generate
+                  </button>
+                </div>
+              </div>
+
+              <!-- Status Loading indicator -->
+              <div id="release-status-container" style="display: none; margin-top: 16px; padding: 12px; border-radius: 8px; background: var(--surface-container-low); border: 1px solid var(--outline-variant);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="release-spinner" style="width: 16px; height: 16px; border: 2px solid var(--outline-variant); border-top-color: var(--primary); border-radius: 50%; animation: release-spin 0.8s linear infinite;"></div>
+                  <span id="release-status-text" style="font-size: 11px; color: var(--on-surface); font-weight: 500;">Reading issue key...</span>
+                </div>
+              </div>
+
+              <!-- Error Banner -->
+              <div id="release-error-banner" class="alert-error alert-banner" style="display: none; margin-top: 16px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--error-container); background: var(--error-container); color: var(--on-error-container); align-items: flex-start; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--error); margin-top: 1px;">error</span>
+                <div id="release-error-message" style="font-size: 11px; font-weight: 500; line-height: 1.4;">Invalid JSON structure.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT PANEL: GENERATION WORKSPACE -->
+          <div class="panel" style="flex-grow: 1; display: flex; flex-direction: column; background-color: var(--surface-color);">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">auto_awesome</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Release Note Output</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">AI-formulated user benefit summary</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Empty Placeholder -->
+            <div id="release-empty-state" class="empty-placeholder" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; height: 100%;">
+              <span class="material-symbols-outlined" style="font-size: 48px; color: var(--outline); opacity: 0.8;">description</span>
+              <div class="empty-placeholder-title" style="font-size: 15px; margin-top: 8px; font-weight: 600;">No Release Notes Generated</div>
+              <p class="empty-placeholder-desc" style="max-width: 380px; margin-top: 6px; text-align: center; color: var(--on-surface-variant); font-size: 12px; line-height: 1.6; opacity: 0.8;">
+                Enter a ticket key or paste a Jira issue JSON payload on the left panel, then trigger the generator to run Gemini analysis and generate an official release note.
+              </p>
+            </div>
+
+            <!-- Results List -->
+            <div id="release-results-container" style="display: none; flex-grow: 1; padding: 20px; overflow-y: auto;">
+              <!-- Meta Summary Card -->
+              <div id="release-summary-meta-card" style="padding: 14px 16px; border-radius: 8px; background: var(--surface-container-low); border: 1px solid var(--outline-variant); margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                  <span id="release-summary-key" style="font-family: var(--font-mono); font-weight: 700; font-size: 11px; color: var(--primary);">--</span>
+                  <span id="release-summary-type" class="type-badge story" style="font-size: 8px; padding: 1px 4px;">--</span>
+                </div>
+                <h3 id="release-summary-title" style="font-size: 13px; font-weight: 600; margin: 0; color: var(--on-surface); line-height: 1.4;">Jira Ticket Title</h3>
+              </div>
+
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--outline-variant);">
+                <span style="font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--on-surface-variant); letter-spacing: 0.08em;">Generated Release Note</span>
+              </div>
+
+              <div id="release-variations-list" style="display: flex; flex-direction: column; gap: 16px; padding-bottom: 20px;">
+                <!-- Dynamically populated card -->
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- VIEW 2: JSON TRIMMER -->
+      <div id="trimmer-view" class="view-panel" style="display: none; height: 100%;">
+        <div id="trimmer-panel" style="display: flex; flex-direction: row; flex-grow: 1; height: 100%; overflow: hidden;">
+          
+          <!-- LEFT PANEL: INPUT WORKSPACE -->
+          <div class="panel" style="width: 380px; flex-shrink: 0; border-right: 1px solid var(--outline-variant); background-color: var(--surface-color); display: flex; flex-direction: column;">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">edit_note</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Jira Ticket Input</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">Fetch issue or paste raw payload</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="panel-content" style="padding: 16px; overflow-y: auto; flex-grow: 1;">
+              <!-- Tabs -->
+              <div class="tabs-container">
+                <button class="tab-btn active" id="btn-trimmer-tab-fetch">Fetch Issue</button>
+                <button class="tab-btn" id="btn-trimmer-tab-paste">Paste JSON</button>
+              </div>
+
+              <!-- Fetch Tab Content -->
+              <div id="trimmer-tab-fetch-content" class="release-tab-content active">
+                <div class="form-group">
+                  <label for="trimmer-issue-key" class="input-label">Jira Issue Key</label>
+                  <input type="text" id="trimmer-issue-key" class="input-field" placeholder="e.g. FMS-101" style="text-transform: uppercase;">
+                </div>
+                
+                <button id="btn-trimmer-fetch-generate" class="btn btn-primary w-full">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">download</span> Fetch &amp; Trim JSON
+                </button>
+              </div>
+
+              <!-- Paste Tab Content -->
+              <div id="trimmer-tab-paste-content" class="release-tab-content" style="display: none;">
+                <div class="form-group">
+                  <label for="trimmer-raw-json" class="input-label">Jira Ticket JSON Payload</label>
+                  <textarea id="trimmer-raw-json" class="textarea-field" rows="15" placeholder="Paste full Jira issue REST API response here..."></textarea>
+                </div>
+                
+                <button id="btn-trimmer-paste-generate" class="btn btn-primary w-full">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">cleaning_services</span> Trim Pasted JSON
+                </button>
+              </div>
+
+              <!-- Loading Indicator -->
+              <div id="trimmer-status-container" style="display: none; margin-top: 16px; padding: 12px; border-radius: 8px; background: var(--surface-container-low); border: 1px solid var(--outline-variant);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <div class="release-spinner" style="width: 16px; height: 16px; border: 2px solid var(--outline-variant); border-top-color: var(--primary); border-radius: 50%; animation: release-spin 0.8s linear infinite;"></div>
+                  <span id="trimmer-status-text" style="font-size: 11px; color: var(--on-surface); font-weight: 500;">Fetching ticket...</span>
+                </div>
+              </div>
+
+              <!-- Error Banner -->
+              <div id="trimmer-error-banner" class="alert-error alert-banner" style="display: none; margin-top: 16px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--error-container); background: var(--error-container); color: var(--on-error-container); align-items: flex-start; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--error); margin-top: 1px;">error</span>
+                <div id="trimmer-error-message" style="font-size: 11px; font-weight: 500; line-height: 1.4;">An error occurred.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT PANEL: OUTPUT WORKSPACE -->
+          <div class="panel flex-1" style="display: flex; flex-direction: column; background-color: var(--surface-color);">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">code</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Trimmed JSON Output</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">Trimmed payload (heading &amp; description)</p>
+                </div>
+              </div>
+              <div class="flex-row gap-sm">
+                <button id="btn-trimmer-copy-output" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 11px;">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">content_copy</span>
+                  <span>Copy JSON</span>
+                </button>
+                <button id="btn-trimmer-download-output" class="btn btn-secondary" style="height: 28px; padding: 0 10px; font-size: 11px;">
+                  <span class="material-symbols-outlined" style="font-size: 13px;">download</span>
+                  <span>Download</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="panel-content" style="background: var(--surface-dim); padding: 16px; flex-grow: 1; overflow: auto;">
+              <pre class="json-pre" id="trimmer-json-display" style="min-height: 100%; margin: 0; padding: 16px; border-radius: 8px; background: var(--surface-lowest); border: 1px solid var(--outline-variant); overflow: auto; font-family: var(--font-mono); font-size: 12px; line-height: 1.6; color: var(--on-surface); white-space: pre-wrap; word-break: break-all;">{
+  "message": "Output will appear here once processed."
+}</pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="data.js"></script>
+  <script src="tools.js"></script>
+</body>
+</html>

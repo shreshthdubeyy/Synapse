@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Synapse - Jira Delivery Intelligence</title>
+  <link rel="icon" type="image/svg+xml" href="synapse-color.svg">
+  
+  <!-- Fonts: Geist, Inter, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Inter:wght@100..900&family=JetBrains+Mono:wght@100..800&display=swap" rel="stylesheet">
+  
+  <!-- Material Symbols Outlined Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-surface text-on-surface h-screen w-full flex overflow-hidden font-body text-body antialiased">
+  
+  <!-- iOS 16 Fluid Background Blobs -->
+  <div class="bg-blobs-container">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+  </div>
+ 
+  <!-- App Wrapper Grid -->
+  <div id="app-wrapper">
+    
+    <!-- TOP APP BAR -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="header-logo" style="background: transparent; border: none; padding: 0; display: flex; align-items: center; justify-content: center;">
+          <img src="synapse-color.svg" class="logo-light" alt="Synapse Logo" style="height: 26px; width: 26px; object-fit: contain;">
+          <img src="synapse-white.svg" class="logo-dark" alt="Synapse Logo" style="height: 26px; width: 26px; object-fit: contain;">
+        </div>
+        <div class="header-title-group">
+          <h1>Synapse</h1>
+          <p>Jira Delivery Intelligence</p>
+        </div>
+        <nav class="header-nav">
+          <a class="header-nav-link active" id="nav-workspace-link">Workspace</a>
+          <a class="header-nav-link" id="nav-graph-link">Dependency Graph</a>
+        </nav>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Quick Epic Switcher -->
+        <div class="flex-row items-center gap-sm">
+          <input type="text" id="epic-switcher-input" class="input-field" placeholder="Epic Number (e.g. 100)" style="width: 168px; text-transform: uppercase;">
+          <button id="btn-epic-switcher-load" class="btn btn-primary">
+            <span class="material-symbols-outlined" style="font-size: 13px;">search</span> Load
+          </button>
+        </div>
+        
+        <button id="btn-import-json" class="btn btn-secondary">
+          <span class="material-symbols-outlined" style="font-size: 14px;">upload</span> Import
+        </button>
+
+        <button id="btn-theme-toggle" class="btn-icon" title="Toggle Theme">
+          <span class="material-symbols-outlined" id="theme-toggle-icon" style="font-size: 16px;">light_mode</span>
+        </button>
+        
+        <div class="header-avatar">
+          <img alt="User Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2OPxu00muP9drzhflxPn7U5skQLgQ5FW0lgaFq1EKzI1-cEmG-_Ra0meNp8j35M1oo5sgjw_dVsf72LVyWHoFU7tYwA4AYc4fkp5JAu0fbW362WsXNB0wyog-2j96LzABXLCT6NFJDJbdA-8VY5taD1AL6pttEzle_ESIndlmfm69g2zE8amoAQ29NJaaB-9d7Th8D9xWisMMTKC3PRq8ysP6DyC9NCIbrswUTonDQixlzIj1veGMg-3mFz05fnv1SPdXJZvF2UA"/>
+        </div>
+      </div>
+    </header>
+
+    <!-- HORIZONTAL CORE SECTION -->
+    <div class="main-shell-container">
+      
+      <!-- SIDEBAR DRAWER (STITCH NAVIGATION) -->
+      <aside class="app-sidebar">
+        <ul class="sidebar-menu-list">
+          <li>
+            <a class="sidebar-menu-link active" id="menu-explorer">
+              <span class="material-symbols-outlined" style="font-size: 18px;">folder_open</span>
+              <span>Explorer</span>
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-menu-link" id="menu-sprints">
+              <span class="material-symbols-outlined" style="font-size: 18px;">bolt</span>
+              <span>Sprint</span>
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-menu-link" id="menu-backlog">
+              <span class="material-symbols-outlined" style="font-size: 18px;">layers</span>
+              <span>Backlog</span>
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-menu-link" id="menu-analytics">
+              <span class="material-symbols-outlined" style="font-size: 18px;">analytics</span>
+              <span>Analytics</span>
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-menu-link" id="menu-integrations">
+              <span class="material-symbols-outlined" style="font-size: 18px;">api</span>
+              <span>Integrations</span>
+            </a>
+          </li>
+          <li>
+            <a class="sidebar-menu-link" id="menu-settings">
+              <span class="material-symbols-outlined" style="font-size: 18px;">settings</span>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-footer">
+          <a class="sidebar-menu-link" style="padding: 6px 12px; font-size: 12px;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">description</span>
+            <span>Docs</span>
+          </a>
+          <a class="sidebar-menu-link" style="padding: 6px 12px; font-size: 12px;">
+            <span class="material-symbols-outlined" style="font-size: 16px;">help_outline</span>
+            <span>Help</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- VIEW 1: WORKSPACE 3-PANEL EXPLORER -->
+      <div id="workspace-view" class="view-panel active">
+        <div id="app-container" style="flex-grow: 1;">
+          
+          <!-- LEFT PANEL: TICKET EXPLORER -->
+          <div id="left-panel" class="panel">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">view_sidebar</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Epic Navigator</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">Epic contents &amp; filters</p>
+                </div>
+              </div>
+            </div>
+            <!-- Epic Card Summary -->
+            <div style="padding: 12px 16px 0 16px;" id="epic-overview-container">
+              <div class="epic-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                  <h2 id="epic-title">Loading Epic...</h2>
+                  <span class="badge badge-inprogress" id="epic-status-badge">In Progress</span>
+                </div>
+                <div class="epic-progress-bar-container">
+                  <div id="epic-progress-bar" class="epic-progress-bar"></div>
+                </div>
+                <div class="epic-stats-row">
+                  <span id="epic-issues-total">0 Issues</span>
+                  <span><strong id="epic-issues-done" style="color: var(--done-color);">0</strong> Done / <span id="epic-issues-open">0</span> Open</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Breadcrumbs bar inside Left Navigator -->
+            <div class="breadcrumb-container" id="breadcrumbs-bar"></div>
+            
+            <!-- Quick Navigation Pills -->
+            <div class="nav-pills" id="type-filter-pills">
+              <button class="pill-btn active" data-type="All">All</button>
+              <button class="pill-btn" data-type="Story">Stories <span class="pill-count" id="count-story">0</span></button>
+              <button class="pill-btn" data-type="Task">Tasks <span class="pill-count" id="count-task">0</span></button>
+              <button class="pill-btn" data-type="Bug">Bugs <span class="pill-count" id="count-bug">0</span></button>
+              <button class="pill-btn" data-type="Improvement">Improvements <span class="pill-count" id="count-improvement">0</span></button>
+              <button class="pill-btn" data-type="Subtask" style="display: none;">Subtasks <span class="pill-count" id="count-subtask">0</span></button>
+            </div>
+            
+            <!-- Search bar -->
+            <div class="search-container">
+              <span class="material-symbols-outlined search-icon" style="font-size: 16px;">search</span>
+              <input type="text" id="search-bar" class="search-input" placeholder="Search key, summary, or Jira key...">
+            </div>
+            
+            <!-- Ticket List scrolling panel -->
+            <div class="panel-content" style="padding: 0; background-color: var(--surface-color);">
+              <ul id="ticket-list" class="ticket-list">
+                <!-- Populated dynamically -->
+              </ul>
+            </div>
+          </div>
+          
+          <!-- RESIZE SPLIT 1 -->
+          <div id="resize-handle-left" class="resize-handle"></div>
+ 
+          <!-- CENTER PANEL: DETAILED ISSUES WORKSPACE -->
+          <div id="center-panel" class="panel">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">terminal</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Workspace Inspector</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">Details, comments &amp; history</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sticky header container for active issue metadata and tabs -->
+            <div id="workspace-active-header" class="glass" style="display: flex; flex-direction: column; padding: 14px 16px 0 16px; border-width: 0 0 1px 0; border-style: solid; border-color: var(--outline); flex-shrink: 0; background: var(--surface-low);">
+              <!-- Workspace details Header -->
+              <div class="workspace-header" id="workspace-header-content" style="padding-bottom: 8px;">
+                <div class="workspace-key-row">
+                  <span id="issue-key-display">--</span>
+                  <span class="breadcrumb-separator">></span>
+                  <span id="issue-type-badge-container"></span>
+                </div>
+                <h2 class="workspace-title" id="issue-title-display" style="margin-bottom: 10px;">Select an issue to inspect details</h2>
+                
+                <!-- Metadata Grid -->
+                <div class="metadata-grid" id="issue-meta-row" style="margin-bottom: 4px;">
+                  <div class="meta-chip">
+                    <span class="meta-label">Status</span>
+                    <span id="meta-status" class="meta-value">--</span>
+                  </div>
+                  <div class="meta-chip">
+                    <span class="meta-label">Assignee</span>
+                    <span id="meta-assignee" class="meta-value">--</span>
+                  </div>
+                  <div class="meta-chip">
+                    <span class="meta-label">Priority</span>
+                    <span id="meta-priority" class="meta-value">--</span>
+                  </div>
+                  <div class="meta-chip">
+                    <span class="meta-label">Reporter</span>
+                    <span id="meta-reporter" class="meta-value">--</span>
+                  </div>
+                  <div class="meta-chip">
+                    <span class="meta-label">Points</span>
+                    <span id="meta-points" class="meta-value">--</span>
+                  </div>
+                  <div class="meta-chip">
+                    <span class="meta-label">Updated</span>
+                    <span id="meta-updated" class="meta-value">--</span>
+                  </div>
+                  <div class="meta-chip">
+                    <span class="meta-label">Sprint</span>
+                    <span id="meta-sprint" class="meta-value">--</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Tab Controls -->
+              <div class="workspace-tabs" id="workspace-tabs-bar" style="margin-top: 4px; margin-bottom: 10px;">
+                <button class="tab-btn active" data-tab="overview">Overview</button>
+                <button class="tab-btn" data-tab="comments">Comments <span id="comments-count-badge"></span></button>
+                <button class="tab-btn" data-tab="links">Links <span id="links-count-badge"></span></button>
+                <button class="tab-btn" data-tab="attachments">Attachments</button>
+                <button class="tab-btn" data-tab="history">History</button>
+              </div>
+            </div>
+            
+            <!-- Workspace Scrollable Panel Content -->
+            <div class="panel-content" id="workspace-content-area" style="background-color: transparent; padding: 20px;">
+              <!-- TAB PANEL: EMPTY STATE -->
+              <div id="tab-empty-state" class="tab-content-panel active">
+                <div class="empty-placeholder" style="height: 350px;">
+                  <span class="material-symbols-outlined" style="font-size: 48px; color: var(--outline);">analytics</span>
+                  <div class="empty-placeholder-title" style="font-size:15px; margin-top:8px;">Workspace Inspector</div>
+                  <p class="empty-placeholder-desc" style="max-width:360px; margin-top:6px;">
+                    To begin analyzing your engineering delivery paths:
+                    <br><br>
+                    1. Use the **Epic Key** input in the top bar to pull a live board.
+                    <br>
+                    2. Click <strong>Import JSON</strong> to load a local data model.
+                  </p>
+                  <button id="btn-load-demo-workspace" class="primary" style="margin-top: 16px; height: 32px; padding: 0 16px; border-radius: 8px;">
+                    <span class="material-symbols-outlined" style="font-size: 16px;">explore</span> Load Demo Data
+                  </button>
+                </div>
+              </div>
+
+              <!-- TAB PANEL: OVERVIEW -->
+              <div id="tab-overview" class="tab-content-panel">
+                <div class="doc-section">
+                  <h3 class="doc-section-title">Description</h3>
+                  <div class="doc-text" id="desc-content">No description provided.</div>
+                </div>
+                
+                <div class="doc-section">
+                  <h3 class="doc-section-title">Acceptance Criteria</h3>
+                  <div class="doc-text" id="ac-content"></div>
+                </div>
+              </div>
+              
+              <!-- TAB PANEL: COMMENTS -->
+              <div id="tab-comments" class="tab-content-panel">
+                <div class="comments-list" id="comments-list-container"></div>
+              </div>
+              
+              <!-- TAB PANEL: LINKS -->
+              <div id="tab-links" class="tab-content-panel">
+                <div class="doc-section">
+                  <h3 class="doc-section-title">Linked Issues & Dependencies</h3>
+                  <div class="context-list" id="linked-issues-container"></div>
+                </div>
+              </div>
+              
+              <!-- TAB PANEL: ATTACHMENTS -->
+              <div id="tab-attachments" class="tab-content-panel">
+                <div class="doc-section">
+                  <h3 class="doc-section-title">Attached Files</h3>
+                  <div class="context-list" id="attachments-list-container"></div>
+                </div>
+              </div>
+              
+              <!-- TAB PANEL: HISTORY -->
+              <div id="tab-history" class="tab-content-panel">
+                <div class="history-timeline" id="history-timeline-container"></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- RESIZE SPLIT 2 -->
+          <div id="resize-handle-right" class="resize-handle"></div>
+
+          <!-- RIGHT PANEL: SIDEBAR CONTEXT -->
+          <div id="right-panel" class="panel">
+            <div class="panel-header" style="height: 44px; border-bottom: 1px solid var(--outline); display: flex; align-items: center; padding: 0 16px; background-color: var(--surface-color);">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">hub</span>
+                <div>
+                  <h2 style="font-size: 12px; font-weight: 600; letter-spacing: -0.01em; margin: 0; line-height: 1.2;">Contextual Intelligence</h2>
+                  <p style="font-size: 9px; margin: 0; opacity: 0.6; line-height: 1.1;">Issue analysis &amp; relationships</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="panel-content" style="padding: 14px;">
+              
+              <!-- Parent Context Widget -->
+              <div class="sidebar-section">
+                <h3 class="sidebar-section-title">
+                  <span>Parent Context</span>
+                </h3>
+                <div class="context-list" id="sidebar-parent-context"></div>
+              </div>
+              
+              <!-- Child Context / Subtasks -->
+              <div class="sidebar-section">
+                <h3 class="sidebar-section-title">
+                  <span>Subtasks &amp; Children</span>
+                </h3>
+                <div class="context-list" id="sidebar-child-context" style="max-height: 180px; overflow-y: auto;"></div>
+              </div>
+              
+              <!-- AI Analysis Card -->
+              <div class="sidebar-section ai-summary-card">
+                <h3 class="sidebar-section-title" style="margin-bottom: 8px;">
+                  <span style="display: flex; align-items: center; gap: 6px;">
+                    <span class="material-symbols-outlined" style="font-size: 15px;">auto_awesome</span>
+                    AI Analysis
+                  </span>
+                </h3>
+                <div id="ai-analysis-content"></div>
+              </div>
+              
+              <!-- Metrics Widget -->
+              <div style="margin-bottom: 8px;">
+                <h3 class="sidebar-section-title" style="margin-bottom: 10px;">Epic Metrics</h3>
+                <div class="metrics-grid">
+                  <div class="metric-widget">
+                    <div class="metric-value" id="metric-completion">--%</div>
+                    <div class="metric-label">Completion</div>
+                  </div>
+                  <div class="metric-widget">
+                    <div class="metric-value" id="metric-open">--</div>
+                    <div class="metric-label">Open Issues</div>
+                  </div>
+                  <div class="metric-widget">
+                    <div class="metric-value" id="metric-blocked">--</div>
+                    <div class="metric-label">Blocked</div>
+                  </div>
+                  <div class="metric-widget">
+                    <div class="metric-value" id="metric-highest">--</div>
+                    <div class="metric-label">Highest Priority</div>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- VIEW 2: INTERACTIVE DEPENDENCY GRAPH -->
+      <div id="dependency-graph-view" class="view-panel">
+        <div id="dependency-graph-panel">
+          
+          <!-- Graph Canvas Area -->
+          <div class="graph-canvas-container dot-grid">
+            
+            <!-- Graph controls toolbar -->
+            <div class="graph-toolbar">
+              <div class="toolbar-group">
+                <button class="toolbar-btn" id="btn-zoom-out" title="Zoom Out">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">remove</span>
+                </button>
+                <span class="toolbar-btn" style="pointer-events: none; min-width: 44px; color: var(--on-surface-variant);" id="zoom-value-label">100%</span>
+                <button class="toolbar-btn" id="btn-zoom-in" title="Zoom In">
+                  <span class="material-symbols-outlined" style="font-size: 16px;">add</span>
+                </button>
+              </div>
+              <div class="toolbar-group">
+                <button class="toolbar-btn" id="btn-zoom-fit">
+                  <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">fit_screen</span> Fit
+                </button>
+              </div>
+              <div class="toolbar-group" style="padding: 1px;">
+                <button class="toolbar-btn" id="btn-layout-horz">
+                  <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">align_horizontal_left</span> Horz
+                </button>
+                <div class="toolbar-separator"></div>
+                <button class="toolbar-btn active" id="btn-layout-vert">
+                  <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">align_vertical_top</span> Vert
+                </button>
+              </div>
+              <div class="toolbar-group">
+                <button class="toolbar-btn active" id="btn-toggle-subtasks" title="Toggle Subtasks">
+                  <span class="material-symbols-outlined" style="font-size: 16px; margin-right: 4px;">account_tree</span> Subtasks
+                </button>
+              </div>
+            </div>
+
+            <!-- Viewport panning container -->
+            <div class="graph-viewport" id="graph-viewport-canvas">
+              <div class="graph-content" id="graph-nodes-wrapper">
+                <!-- SVG Dependency connectors SVG layer -->
+                <svg class="graph-svg-canvas" id="graph-svg-connections">
+                  <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 2 L 8 5 L 0 8 z" fill="rgba(99,102,241,0.35)" />
+                    </marker>
+                    <marker id="arrow-active" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 2 L 8 5 L 0 8 z" fill="#6366f1" />
+                    </marker>
+                    <marker id="arrow-blocked" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M 0 2 L 8 5 L 0 8 z" fill="#dc2626" />
+                    </marker>
+                  </defs>
+                  <!-- Paths dynamically injected -->
+                </svg>
+                
+                <!-- Ticket nodes dynamically injected -->
+              </div>
+            </div>
+
+             <!-- Bottom Left Context Breadcrumb Tag -->
+            <div style="position: absolute; bottom: 16px; left: 16px; z-index: 10;">
+              <div style="padding: 6px 14px; font-size: 11px; color: var(--on-surface-variant); display: flex; align-items: center; background: var(--surface-highest); backdrop-filter: blur(12px); border: 1px solid var(--outline); border-radius: 20px; box-shadow: var(--shadow-sm);">
+                <span class="material-symbols-outlined" style="font-size: 14px; margin-right: 6px; color: var(--primary);">schema</span>
+                Epic: <span id="graph-epic-key" style="margin-left: 4px; font-weight: 700; color: var(--primary); font-family: var(--font-mono); font-size: 11px;">--</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Graph Insights Sidebar -->
+          <aside class="graph-sidebar">
+            <!-- Sidebar Header -->
+            <div style="display: flex; align-items: center; gap: 8px; padding-bottom: 14px; margin-bottom: 14px; border-bottom: 1px solid var(--outline-variant);">
+              <span class="material-symbols-outlined" style="font-size: 18px; color: var(--primary);">insights</span>
+              <div>
+                <h3 style="font-size: 13px; font-weight: 700; letter-spacing: -0.01em;">Graph Insights</h3>
+                <p style="font-size: 10px; margin: 0; opacity: 0.6;">Live dependency analysis</p>
+              </div>
+            </div>
+
+            <!-- Graph summary widgets -->
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <section>
+                <h4 style="margin-bottom: 8px;">Dependency Summary</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div class="graph-stat-card">
+                    <span style="font-size: 9px; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.08em;">Total Nodes</span>
+                    <span style="font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--on-surface); margin-top: 2px;" id="graph-total-nodes">--</span>
+                  </div>
+                  <div class="graph-stat-card">
+                    <span style="font-size: 9px; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.08em;">Critical Path</span>
+                    <span style="font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--on-surface); margin-top: 2px;" id="graph-critical-path">--</span>
+                  </div>
+                </div>
+              </section>
+
+              <div style="height: 1px; background: var(--outline-variant); opacity: 0.5;"></div>
+
+              <!-- Bottleneck analysis -->
+              <section>
+                <h4 style="margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                  <span>Bottleneck Analysis</span>
+                  <span style="padding: 2px 7px; border-radius: 12px; font-size: 9px; font-weight: 700; background: var(--blocked-bg); color: var(--blocked-color); border: 1px solid var(--blocked-border);" id="graph-blocked-count">0 BLOCKED</span>
+                </h4>
+                <div class="context-list" id="graph-bottlenecks-list" style="max-height: 220px; overflow-y: auto;">
+                  <!-- Bottlenecks will be dynamically listed -->
+                </div>
+              </section>
+
+              <div style="height: 1px; background: var(--outline-variant); opacity: 0.5;"></div>
+
+              <!-- High Risk Paths -->
+              <section>
+                <h4 style="margin-bottom: 8px;">High Risk Paths</h4>
+                <div id="graph-risk-paths" style="border-radius: 6px; border: 1px solid var(--outline-variant); overflow: hidden; background: var(--surface-lowest);">
+                  <!-- Risk path lists -->
+                </div>
+              </section>
+            </div>
+          </aside>
+          
+        </div>
+      </div>
+
+
+
+    </div>
+  </div>
+
+  <!-- MODAL: IMPORT JSON -->
+  <div class="modal-overlay" id="modal-import-json-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2 style="font-size: 14px;">Import Epic JSON Hierarchy</h2>
+        <button class="modal-close-btn" id="btn-close-import-modal">
+          <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 12px; color: var(--on-surface-variant); margin-bottom: 16px;">
+          Load a JSON file exported from Postman, Jira APIs, or generated via our PowerShell fetch script.
+        </p>
+        
+        <div class="form-group">
+          <label for="json-file-input">Select JSON file</label>
+          <input type="file" id="json-file-input" class="form-input" accept=".json">
+        </div>
+        
+        <div style="text-align: center; margin: 12px 0; color: var(--on-surface-variant); font-size: 11px; opacity: 0.6;">— OR PASTE RAW JSON —</div>
+        
+        <div class="form-group">
+          <label for="json-text-input">JSON String</label>
+          <textarea id="json-text-input" class="form-input" rows="8" placeholder="Paste your Jira JSON object here..." style="font-family: var(--font-mono); font-size: 11px; resize: vertical;"></textarea>
+        </div>
+        
+        <div id="import-error-banner" class="alert-error alert-banner" style="display: none; margin-top: 12px;">
+          <span class="material-symbols-outlined" style="font-size: 16px; margin-top: 2px;">error</span>
+          <div id="import-error-message">Invalid JSON structure.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btn-close-import-footer">Cancel</button>
+        <button id="btn-submit-import" class="primary">Load & Parse</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Global Futuristic Loader Overlay -->
+  <div id="global-loader" class="global-loader" style="display: none;">
+    <div class="loader-content">
+      <div class="constellation-loader">
+        <div class="node central-node"></div>
+        <div class="node orbit-node-1"></div>
+        <div class="node orbit-node-2"></div>
+        <div class="node orbit-node-3"></div>
+        <svg class="loader-svg">
+          <line class="loader-line line-1" x1="50%" y1="50%" x2="20%" y2="20%"></line>
+          <line class="loader-line line-2" x1="50%" y1="50%" x2="80%" y2="30%"></line>
+          <line class="loader-line line-3" x1="50%" y1="50%" x2="40%" y2="80%"></line>
+        </svg>
+      </div>
+      <h2 class="loader-title" id="loader-title">Synapse</h2>
+      <p id="loader-status" class="loader-status">Initializing workspace...</p>
+      <div class="loader-progress-bar">
+        <div class="loader-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
