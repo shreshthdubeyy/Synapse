@@ -1135,8 +1135,6 @@
     }
   }
 
-  }
-
   // --- ACTIVE EPIC QUICK SWITCHER ---
   async function handleEpicSwitcherLoad() {
     let epicId = el.epicSwitcherInput.value.trim().toUpperCase();
@@ -1155,7 +1153,7 @@
     el.btnEpicSwitcherLoad.disabled = true;
 
     try {
-      updateLoaderStatus('Running in Demo Mode: Loading sample Epic hierarchy...');
+      showLoader('Running in Demo Mode: Loading sample Epic hierarchy...', 'synapse');
       await new Promise(r => setTimeout(r, 600));
       
       const demoData = window.JiraParser.getMockData();
@@ -1315,9 +1313,20 @@
   async function fetchGeminiAIAnalysis(issue) {
     const issueKey = issue.key;
 
+    // In Demo Mode: if pre-generated local AI analysis is present, load it seamlessly
+    if (issue.aiAnalysis) {
+      await new Promise(r => setTimeout(r, 600));
+      issue.aiAnalysisLive = issue.aiAnalysis;
+      if (appState.activeIssue && appState.activeIssue.key === issueKey) {
+        renderAIContent(el.aiAnalysisContent, issue.aiAnalysis, true);
+      }
+      return;
+    }
+
     try {
-      if (!GOOGLE_SCRIPT_URL) {
-        throw new Error('Google Apps Script URL is not configured. Please define GOOGLE_SCRIPT_URL at the top of app.js.');
+      const scriptUrl = typeof GOOGLE_SCRIPT_URL !== 'undefined' ? GOOGLE_SCRIPT_URL : window.GOOGLE_SCRIPT_URL;
+      if (!scriptUrl) {
+        throw new Error('Google Apps Script URL is not configured.');
       }
 
       // Clean up content summaries to prevent payload bloat
@@ -1342,7 +1351,7 @@
         linksText: linksText
       };
 
-      const response = await fetch(GOOGLE_SCRIPT_URL, {
+      const response = await fetch(scriptUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({
